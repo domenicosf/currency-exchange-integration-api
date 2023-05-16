@@ -1,5 +1,6 @@
 package com.crewmeister.cmcodingchallenge;
 
+import com.crewmeister.cmcodingchallenge.entity.CurrencyExchangeRate;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
