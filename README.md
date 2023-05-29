@@ -59,3 +59,16 @@ demo output.
 [1] https://start.spring.io/
 
 [2] [Bundesbank Daily Exchange Rates](https://www.bundesbank.de/dynamic/action/en/statistics/time-series-databases/time-series-databases/759784/759784?statisticType=BBK_ITS&listId=www_sdks_b01012_3&treeAnchor=WECHSELKURSE)
+
+
+## Important Information
+The project contain swagger documentation and h2 console to access the in memory database.
+* To access the documentation please write the following into your browser:
+````javascript
+http://localhost:8080/swagger-ui/
+````
+* To access the in memory database console please write the following into the browser and use the following jdbc url
+````javascript
+http://localhost:8080/h2
+JDBC URL: jdbc:h2:mem:currencieslocaldb
+````

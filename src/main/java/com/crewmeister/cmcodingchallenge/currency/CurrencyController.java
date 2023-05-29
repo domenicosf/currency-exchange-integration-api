@@ -1,22 +1,51 @@
 package com.crewmeister.cmcodingchallenge.currency;
 
+import com.crewmeister.cmcodingchallenge.entity.Currency;
+import com.crewmeister.cmcodingchallenge.entity.CurrencyExchangeRate;
+import com.crewmeister.cmcodingchallenge.service.CurrencyExchangeRateService;
+import com.crewmeister.cmcodingchallenge.service.CurrencyService;
+import dto.ConversionResult;
+import dto.CurrencyConversionData;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RestController()
 @RequestMapping("/api")
 public class CurrencyController {
 
-    @GetMapping("/currencies")
-    public ResponseEntity<ArrayList<CurrencyConversionRates>> getCurrencies() {
-        ArrayList<CurrencyConversionRates> currencyConversionRates = new ArrayList<CurrencyConversionRates>();
-        currencyConversionRates.add(new CurrencyConversionRates(2.5));
+    private final CurrencyService currencyService;
+    private final CurrencyExchangeRateService currencyExchangeRateService;
 
-        return new ResponseEntity<ArrayList<CurrencyConversionRates>>(currencyConversionRates, HttpStatus.OK);
+    public CurrencyController(CurrencyService currencyService, CurrencyExchangeRateService currencyExchangeRateService) {
+        this.currencyService = currencyService;
+        this.currencyExchangeRateService = currencyExchangeRateService;
+    }
+
+    @GetMapping("/currencies")
+    public ResponseEntity<List<String>> getCurrencies() {
+        return currencyService.getAllCurrencies();
+    }
+
+    // Get all exchange rates from all currencies at all available times
+    @GetMapping("/currencies/exchange-rates")
+    public ResponseEntity<List<CurrencyExchangeRate>> getExchangeRates() {
+        return this.currencyExchangeRateService.getAllExchangeRates();
+    }
+
+    // Get all exchange rates from all currencies by date
+    @GetMapping("/currencies/exchange-rates/search")
+    public ResponseEntity<List<CurrencyExchangeRate>> getExchangeRatesByDate(@RequestParam String date) {
+        return this.currencyExchangeRateService.getExchangeRatesByDate(date);
+    }
+
+    // Convert certain amount of given currency on a given date to Euro
+    @PostMapping("/currencies/conversion")
+    public ResponseEntity<ConversionResult> convertToEuro(@RequestBody CurrencyConversionData conversionData){
+        return this.currencyExchangeRateService.convertToEuro(conversionData);
     }
 }

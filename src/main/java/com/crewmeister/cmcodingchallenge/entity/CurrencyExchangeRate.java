@@ -7,18 +7,14 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "currency_exchange_rate")
 @Getter
 @Setter
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 public class CurrencyExchangeRate {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    @NotNull
-    private LocalDate date;
-    @NotNull
-    private Double rate;
-    @NotNull
-    private String currency;
+    @EmbeddedId
+    private CurrencyExchangeRateId currencyExchangeRateId;
+    @Column(name = "exchange_rate")
+    private float exchangeRate;
 }
