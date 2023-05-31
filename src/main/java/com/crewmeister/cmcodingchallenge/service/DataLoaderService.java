@@ -52,26 +52,22 @@ public class DataLoaderService implements CommandLineRunner {
         this.objectMapper = objectMapper;
     }
 
-    // Use webClient to fetch data from API
-    public WebClient.ResponseSpec fetchData(String URI) {
+    public WebClient.ResponseSpec retrieveData(String URI) {
         return webClient.get().uri(URI).retrieve();
     }
 
-    // Fetch all data from API or chose data starting from certain date
-    public ResponseData fetchAllData(String startDate) {
+    public ResponseData retrieveAllData(String startDate) {
         if (startDate != null) {
-            return fetchData(String.format(URI_WITH_START_DATE, startDate)).bodyToMono(ResponseData.class).block();
+            return retrieveData(String.format(URI_WITH_START_DATE, startDate)).bodyToMono(ResponseData.class).block();
         }
-        return fetchData(URI_WITHOUT_START_DATE).bodyToMono(ResponseData.class).block();
+        return retrieveData(URI_WITHOUT_START_DATE).bodyToMono(ResponseData.class).block();
     }
 
-    // Fetch latestData from API
-    public ResponseData fetchLatestData() {
+    public ResponseData retrieveLatestData() {
         String currentDate = LocalDate.now().toString();
-        return fetchData(String.format(URI_WITH_START_DATE_AND_END_DATE, currentDate, currentDate)).bodyToMono(ResponseData.class).block();
+        return retrieveData(String.format(URI_WITH_START_DATE_AND_END_DATE, currentDate, currentDate)).bodyToMono(ResponseData.class).block();
     }
 
-    //Fill Exchange Rate Table in DB
     public void fillExchangeRate(ResponseData data) {
         List<CurrencyData> currencies = this.extractAllCurrencies(data);
         List<Date> dates = this.extractAllDates(data);
@@ -120,17 +116,14 @@ public class DataLoaderService implements CommandLineRunner {
         currencyRepository.saveAll(currencies);
     }
 
-    // Extract available currencies from data
     public List<CurrencyData> extractAllCurrencies(ResponseData data) {
         return data.getData().getStructure().getDimensions().getCurrencies().get(1).getValues();
     }
 
-    // Extract available dates from data
     public List<Date> extractAllDates(ResponseData data) {
         return data.getData().getStructure().getDimensions().getObservation().get(0).getValues();
     }
 
-    // Extract Exchange rates and format result as map
     public Map<String, JsonNode> extractAllExchangeRates(ResponseData data) {
         JsonNode series = data.getData().getDataSets().get(0).getSeries();
         return objectMapper.convertValue(series, new TypeReference<>() {
@@ -143,16 +136,14 @@ public class DataLoaderService implements CommandLineRunner {
         return bigDecimal.floatValue();
     }
 
-    // Add latest data available to DB
-    public void addLatestDataToDB() {
-        ResponseData latestData = this.fetchLatestData();
+    public void addLatestDataToDataBase() {
+        ResponseData latestData = this.retrieveLatestData();
         this.fillExchangeRate(latestData);
     }
 
-    // Initialize database(currencies table and exchange rate table)
-    public void initializeDB(String startDate) {
+    public void initializeDataBase(String startDate) {
         try {
-            ResponseData allData = this.fetchAllData(startDate);
+            ResponseData allData = this.retrieveAllData(startDate);
             this.initializeCurrencies(allData);
             this.fillExchangeRate(allData);
         } catch (Exception e) {
@@ -160,17 +151,16 @@ public class DataLoaderService implements CommandLineRunner {
         }
     }
 
-    // Schedule cron job on 4PM every day to update DB with the latest data from API
     @Scheduled(cron = "0 0 17 * * ?", zone = "UTC")
     public void updateDB() {
-        this.addLatestDataToDB();
+        this.addLatestDataToDataBase();
     }
 
 
     @Override
     public void run(String... args) {
         log.info("Loading the data from Bundesbank daily exchange rate rest endpoint to the database");
-        initializeDB(startDate);
+        initializeDataBase(startDate);
         log.info("Database loaded successfully");
     }
 

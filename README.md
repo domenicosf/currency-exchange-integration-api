@@ -72,3 +72,11 @@ http://localhost:8080/swagger-ui/
 http://localhost:8080/h2
 JDBC URL: jdbc:h2:mem:currencieslocaldb
 ````
+### Api Integration with Bundesbank
+For the api integration with bundesbank was used the **BBEX3** time series. All the data was retrieved using json format.
+This project use a idea to load all the necessary data from bundesbank at the application startup and update the data at the 17pm of each day using a command line runner.
+The start date defined to start load the data is found into the properties file. To not load a great amount of sata I suggest to define the start date and used.
+
+````yaml
+initialize.db.start-date=2023-05-01
+````
