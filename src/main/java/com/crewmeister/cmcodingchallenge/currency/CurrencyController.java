@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController()
-@RequestMapping("/api")
+@RequestMapping("/api/currencies")
 public class CurrencyController {
 
     private final CurrencyService currencyService;
@@ -26,25 +26,25 @@ public class CurrencyController {
         this.currencyExchangeRateService = currencyExchangeRateService;
     }
 
-    @GetMapping("/currencies")
+    @GetMapping
     public ResponseEntity<List<String>> getCurrencies() {
         return currencyService.getAllCurrencies();
     }
 
     // Get all exchange rates from all currencies at all available times
-    @GetMapping("/currencies/exchange-rates")
+    @GetMapping("/exchange-rates")
     public ResponseEntity<List<CurrencyExchangeRate>> getExchangeRates() {
         return this.currencyExchangeRateService.getAllExchangeRates();
     }
 
     // Get all exchange rates from all currencies by date
-    @GetMapping("/currencies/exchange-rates/search")
+    @GetMapping("/exchange-rates/search")
     public ResponseEntity<List<CurrencyExchangeRate>> getExchangeRatesByDate(@RequestParam String date) {
         return this.currencyExchangeRateService.getExchangeRatesByDate(date);
     }
 
     // Convert certain amount of given currency on a given date to Euro
-    @PostMapping("/currencies/conversion")
+    @PostMapping("/conversion")
     public ResponseEntity<ConversionResult> convertToEuro(@RequestBody CurrencyConversionData conversionData){
         return this.currencyExchangeRateService.convertToEuro(conversionData);
     }

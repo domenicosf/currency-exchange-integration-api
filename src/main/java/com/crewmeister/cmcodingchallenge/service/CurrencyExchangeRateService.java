@@ -46,7 +46,7 @@ public class CurrencyExchangeRateService {
         try {
             return new ResponseEntity<>(currencyExchangeRateRepository.findAll(), HttpStatus.OK);
         } catch (Exception e) {
-            throw new InternalServerErrorException("Error during the currencies retrieval!");
+            throw new InternalServerErrorException("Error during the exchange rates retrieval!");
         }
     }
 
@@ -55,7 +55,7 @@ public class CurrencyExchangeRateService {
         try {
             return new ResponseEntity<>(currencyExchangeRateRepository.findByCurrencyExchangeRateIdDate(date), HttpStatus.OK);
         } catch (Exception e) {
-            throw new InternalServerErrorException("Error during the currencies retrieval!");
+            throw new InternalServerErrorException("Error during the exchange rates retrieval by date!");
         }
     }
 
@@ -69,7 +69,7 @@ public class CurrencyExchangeRateService {
             String convertedAmount = conversionData.convertAmount(exchangeRate.getExchangeRate());
             return new ResponseEntity<>(new ConversionResult(convertedAmount), HttpStatus.OK);
         } catch (Exception e) {
-            throw new InternalServerErrorException("Error during the currencies retrieval!");
+            throw new InternalServerErrorException("Error during the conversion to euro retrieval!");
         }
     }
 
