@@ -14,7 +14,7 @@ import java.io.Serializable;
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 @ToString
-public class CurrencyExchangeRateId implements Serializable {
+public class ExchangeRateId implements Serializable {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "currency_id", nullable = false)

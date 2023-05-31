@@ -1,7 +1,7 @@
 package com.crewmeister.cmcodingchallenge.service;
 
 import com.crewmeister.cmcodingchallenge.exception.InternalServerErrorException;
-import com.crewmeister.cmcodingchallenge.repository.CurrencyExchangeRateRepository;
+import com.crewmeister.cmcodingchallenge.repository.ExchangeRateRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,21 +14,21 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CurrencyExchangeRateServiceTest {
+class ExchangeRateServiceTest {
     @InjectMocks
-    private CurrencyExchangeRateService currencyExchangeRateService;
+    private ExchangeRateService exchangeRateService;
     @Mock
-    private CurrencyExchangeRateRepository currencyExchangeRateRepository;
+    private ExchangeRateRepository exchangeRateRepository;
 
     @Test
     public void testGetExchangeRatesWithInternalServerErrorException() {
         //given
-        when(currencyExchangeRateRepository.findAll()).thenThrow(new RuntimeException());
+        when(exchangeRateRepository.findAll()).thenThrow(new RuntimeException());
 
         //then
         InternalServerErrorException thrown = assertThrows(
                 InternalServerErrorException.class,
-                () -> currencyExchangeRateService.getAllExchangeRates(),
+                () -> exchangeRateService.getAllExchangeRates(),
                 "Expected doThing() to throw, but it didn't"
         );
 
@@ -38,12 +38,12 @@ class CurrencyExchangeRateServiceTest {
     @Test
     public void testGetExchangeRatesByDateWithInternalServerErrorException() {
         //given
-        when(currencyExchangeRateRepository.findByCurrencyExchangeRateIdDate(any())).thenThrow(new RuntimeException());
+        when(exchangeRateRepository.findByExchangeRateIdDate(any())).thenThrow(new RuntimeException());
 
         //then
         InternalServerErrorException thrown = assertThrows(
                 InternalServerErrorException.class,
-                () -> currencyExchangeRateService.getExchangeRatesByDate(any()),
+                () -> exchangeRateService.getExchangeRatesByDate(any()),
                 "Expected doThing() to throw, but it didn't"
         );
 
@@ -54,7 +54,7 @@ class CurrencyExchangeRateServiceTest {
     public void testConvertToEuroWithInternalServerErrorException() {
         InternalServerErrorException thrown = assertThrows(
                 InternalServerErrorException.class,
-                () -> currencyExchangeRateService.convertToEuro(null),
+                () -> exchangeRateService.convertToEuro(null),
                 "Expected doThing() to throw, but it didn't"
         );
 

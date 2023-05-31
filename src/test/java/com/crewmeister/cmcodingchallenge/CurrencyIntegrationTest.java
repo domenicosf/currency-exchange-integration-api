@@ -1,6 +1,6 @@
 package com.crewmeister.cmcodingchallenge;
 
-import com.crewmeister.cmcodingchallenge.entity.CurrencyExchangeRate;
+import com.crewmeister.cmcodingchallenge.entity.ExchangeRate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.ConversionResult;
@@ -49,22 +49,22 @@ public class CurrencyIntegrationTest {
 
     @Test
     public void testGetExchangeRates() {
-        CurrencyExchangeRate[] currencyExchangeRates = get("/api/currencies/exchange-rates")
+        ExchangeRate[] exchangeRates = get("/api/currencies/exchange-rates")
                 .then()
                 .contentType(APPLICATION_JSON)
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .as(CurrencyExchangeRate[].class);
+                .as(ExchangeRate[].class);
 
-        Assertions.assertTrue(currencyExchangeRates.length > 0);
-        Assertions.assertNotNull(currencyExchangeRates[0].getCurrencyExchangeRateId().getCurrency());
-        Assertions.assertNotNull(currencyExchangeRates[0].getCurrencyExchangeRateId().getDate());
-        Assertions.assertNotNull(currencyExchangeRates[0].getExchangeRate());
+        Assertions.assertTrue(exchangeRates.length > 0);
+        Assertions.assertNotNull(exchangeRates[0].getExchangeRateId().getCurrency());
+        Assertions.assertNotNull(exchangeRates[0].getExchangeRateId().getDate());
+        Assertions.assertNotNull(exchangeRates[0].getExchangeRateValue());
     }
 
     @Test
     public void testGetExchangeRatesByDate() {
-        CurrencyExchangeRate[] currencyExchangeRates = given()
+        ExchangeRate[] exchangeRates = given()
                 .when()
                 .queryParam("date", LocalDate.now().minus(2, ChronoUnit.DAYS).toString())
                 .get("/api/currencies/exchange-rates/search")
@@ -72,12 +72,12 @@ public class CurrencyIntegrationTest {
                 .contentType(APPLICATION_JSON)
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .as(CurrencyExchangeRate[].class);
+                .as(ExchangeRate[].class);
 
-        Assertions.assertTrue(currencyExchangeRates.length > 0);
-        Assertions.assertNotNull(currencyExchangeRates[0].getCurrencyExchangeRateId().getCurrency());
-        Assertions.assertNotNull(currencyExchangeRates[0].getCurrencyExchangeRateId().getDate());
-        Assertions.assertNotNull(currencyExchangeRates[0].getExchangeRate());
+        Assertions.assertTrue(exchangeRates.length > 0);
+        Assertions.assertNotNull(exchangeRates[0].getExchangeRateId().getCurrency());
+        Assertions.assertNotNull(exchangeRates[0].getExchangeRateId().getDate());
+        Assertions.assertNotNull(exchangeRates[0].getExchangeRateValue());
     }
 
     @Test

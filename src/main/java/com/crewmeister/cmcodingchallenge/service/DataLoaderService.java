@@ -1,9 +1,9 @@
 package com.crewmeister.cmcodingchallenge.service;
 
 import com.crewmeister.cmcodingchallenge.entity.Currency;
-import com.crewmeister.cmcodingchallenge.entity.CurrencyExchangeRate;
-import com.crewmeister.cmcodingchallenge.entity.CurrencyExchangeRateId;
-import com.crewmeister.cmcodingchallenge.repository.CurrencyExchangeRateRepository;
+import com.crewmeister.cmcodingchallenge.entity.ExchangeRate;
+import com.crewmeister.cmcodingchallenge.entity.ExchangeRateId;
+import com.crewmeister.cmcodingchallenge.repository.ExchangeRateRepository;
 import com.crewmeister.cmcodingchallenge.repository.CurrencyRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,7 +36,7 @@ public class DataLoaderService implements CommandLineRunner {
 
     private final WebClient webClient;
     private final CurrencyRepository currencyRepository;
-    private final CurrencyExchangeRateRepository currencyExchangeRateRepository;
+    private final ExchangeRateRepository exchangeRateRepository;
 
     final
     ObjectMapper objectMapper;
@@ -45,10 +45,10 @@ public class DataLoaderService implements CommandLineRunner {
     private String startDate;
 
     public DataLoaderService(WebClient webClient, CurrencyRepository currencyRepository,
-                             CurrencyExchangeRateRepository currencyExchangeRateRepository, ObjectMapper objectMapper) {
+                             ExchangeRateRepository exchangeRateRepository, ObjectMapper objectMapper) {
         this.webClient = webClient;
         this.currencyRepository = currencyRepository;
-        this.currencyExchangeRateRepository = currencyExchangeRateRepository;
+        this.exchangeRateRepository = exchangeRateRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -72,12 +72,12 @@ public class DataLoaderService implements CommandLineRunner {
         List<CurrencyData> currencies = this.extractAllCurrencies(data);
         List<Date> dates = this.extractAllDates(data);
         Map<String, JsonNode> allExchangeRates = this.extractAllExchangeRates(data);
-        List<CurrencyExchangeRate> currencyExchangeRates = new ArrayList<>();
+        List<ExchangeRate> exchangeRates = new ArrayList<>();
         int currencyIndex = 0;
 
         for (JsonNode value : allExchangeRates.values()) {
             int dateIndex = 0;
-            CurrencyExchangeRate currencyExchangeRate = new CurrencyExchangeRate();
+            ExchangeRate currencyExchangeRate = new ExchangeRate();
 
             if (value.get("observations") == null) {
                 currencyIndex++;
@@ -96,11 +96,11 @@ public class DataLoaderService implements CommandLineRunner {
                 }
 
                 float exchangeRate = withBigDecimal(v.get(0), 2);
-                CurrencyExchangeRateId currencyExchangeRateId = new CurrencyExchangeRateId(new Currency(currencies.get(currencyIndex).getId()),
+                ExchangeRateId exchangeRateId = new ExchangeRateId(new Currency(currencies.get(currencyIndex).getId()),
                         dates.get(dateIndex).getId());
-                currencyExchangeRate.setCurrencyExchangeRateId(currencyExchangeRateId);
-                currencyExchangeRate.setExchangeRate(exchangeRate);
-                currencyExchangeRateRepository.save(currencyExchangeRate);
+                currencyExchangeRate.setExchangeRateId(exchangeRateId);
+                currencyExchangeRate.setExchangeRateValue(exchangeRate);
+                exchangeRateRepository.save(currencyExchangeRate);
                 dateIndex++;
             }
             currencyIndex++;

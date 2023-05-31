@@ -1,10 +1,10 @@
 package com.crewmeister.cmcodingchallenge.service;
 
 import com.crewmeister.cmcodingchallenge.entity.Currency;
-import com.crewmeister.cmcodingchallenge.entity.CurrencyExchangeRate;
-import com.crewmeister.cmcodingchallenge.entity.CurrencyExchangeRateId;
+import com.crewmeister.cmcodingchallenge.entity.ExchangeRate;
+import com.crewmeister.cmcodingchallenge.entity.ExchangeRateId;
 import com.crewmeister.cmcodingchallenge.exception.InternalServerErrorException;
-import com.crewmeister.cmcodingchallenge.repository.CurrencyExchangeRateRepository;
+import com.crewmeister.cmcodingchallenge.repository.ExchangeRateRepository;
 import dto.ConversionResult;
 import dto.CurrencyConversionData;
 import lombok.extern.slf4j.Slf4j;
@@ -18,42 +18,42 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class CurrencyExchangeRateService {
+public class ExchangeRateService {
 
-    private final CurrencyExchangeRateRepository currencyExchangeRateRepository;
+    private final ExchangeRateRepository exchangeRateRepository;
 
 
-    public CurrencyExchangeRateService(CurrencyExchangeRateRepository currencyExchangeRateRepository) {
-        this.currencyExchangeRateRepository = currencyExchangeRateRepository;
+    public ExchangeRateService(ExchangeRateRepository exchangeRateRepository) {
+        this.exchangeRateRepository = exchangeRateRepository;
     }
 
-    public Map<String, Map<String, Float>> formatToMap(CurrencyExchangeRate currencyExchangeRate) {
+    public Map<String, Map<String, Float>> formatToMap(ExchangeRate exchangeRate) {
         Map<String, Float> ERByDate = new HashMap<>() {
             {
-                put(currencyExchangeRate.getCurrencyExchangeRateId().getDate(), currencyExchangeRate.getExchangeRate());
+                put(exchangeRate.getExchangeRateId().getDate(), exchangeRate.getExchangeRateValue());
             }
         };
         Map<String, Map<String, Float>> result = new HashMap<>() {
             {
-                put(currencyExchangeRate.getCurrencyExchangeRateId().getCurrency().getCurrencyId(), ERByDate);
+                put(exchangeRate.getExchangeRateId().getCurrency().getCurrencyId(), ERByDate);
             }
         };
         return result;
     }
 
-    public ResponseEntity<List<CurrencyExchangeRate>> getAllExchangeRates() {
+    public ResponseEntity<List<ExchangeRate>> getAllExchangeRates() {
         log.info("Retrieving all the exchange rates!");
         try {
-            return new ResponseEntity<>(currencyExchangeRateRepository.findAll(), HttpStatus.OK);
+            return new ResponseEntity<>(exchangeRateRepository.findAll(), HttpStatus.OK);
         } catch (Exception e) {
             throw new InternalServerErrorException("Error during the exchange rates retrieval!");
         }
     }
 
-    public ResponseEntity<List<CurrencyExchangeRate>> getExchangeRatesByDate(String date) {
+    public ResponseEntity<List<ExchangeRate>> getExchangeRatesByDate(String date) {
         log.info("Retrieving all the exchange rates by date!");
         try {
-            return new ResponseEntity<>(currencyExchangeRateRepository.findByCurrencyExchangeRateIdDate(date), HttpStatus.OK);
+            return new ResponseEntity<>(exchangeRateRepository.findByExchangeRateIdDate(date), HttpStatus.OK);
         } catch (Exception e) {
             throw new InternalServerErrorException("Error during the exchange rates retrieval by date!");
         }
@@ -62,11 +62,11 @@ public class CurrencyExchangeRateService {
     public ResponseEntity<ConversionResult> convertToEuro(CurrencyConversionData conversionData) {
         log.info("Converting to Euro!");
         try {
-            CurrencyExchangeRate exchangeRate = currencyExchangeRateRepository.findByCurrencyExchangeRateId(new CurrencyExchangeRateId(new Currency(conversionData.getCurrency()), conversionData.getDate()));
+            ExchangeRate exchangeRate = exchangeRateRepository.findByExchangeRateId(new ExchangeRateId(new Currency(conversionData.getCurrency()), conversionData.getDate()));
             if (exchangeRate == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            String convertedAmount = conversionData.convertAmount(exchangeRate.getExchangeRate());
+            String convertedAmount = conversionData.convertAmount(exchangeRate.getExchangeRateValue());
             return new ResponseEntity<>(new ConversionResult(convertedAmount), HttpStatus.OK);
         } catch (Exception e) {
             throw new InternalServerErrorException("Error during the conversion to euro retrieval!");
